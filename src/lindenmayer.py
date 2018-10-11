@@ -16,13 +16,16 @@ def expand(axiom, rules, n):
     if n == 0:
         return axiom
     else:
-        return ''.join([expand(rules.get(char, ''), rules, n - 1) for char in axiom])
+        result = ''
+        for char in axiom:
+            result += rules.get(char, char)
+        return expand(result, rules, n - 1)
 
 
 def draw(string, alphabet, types, n, stack=[]):
 
     """
-    NOTE: Uses recursion!!!
+    NOTE: Uses recursion!!! (wait, maybe not)
 
     :param n: the current layer of recursion
     :param string: STRING containing characters in the alphabet. Each character corresponds to a command.
@@ -72,25 +75,33 @@ def set_state(t: turtle.Turtle, state: tuple):
 if __name__ == '__main__':
 
     window = turtle.Screen()
+
+
     franklin = turtle.Turtle()
+    franklin.penup()
+    franklin.setposition(0, -200)
+    franklin.setheading(60)
+    franklin.pendown()
     franklin.speed(0)
 
     rules = {'X': 'F+[[X]-X]-F[-FX]+X',
              'F': 'FF'}
     axiom = 'X'
 
-    expanded = expand(axiom, rules, 3)
+    expanded = expand(axiom, rules, 6)
 
-    types = {'move': 10,
+    types = {'move': 4,
              'turn': 25,
              'push': franklin,
              'pop': franklin}
 
     alphabet = {'X': ('none', None, None),
                 'F': ('move', franklin.forward, 1),
-                '-': ('turn', franklin.left, 1),
-                '+': ('turn', franklin.left, -1),
+                '+': ('turn', franklin.left, 1),
+                '-': ('turn', franklin.left, -1),
                 '[': ('push', get_state, franklin),
                 ']': ('pop', set_state, franklin)}
 
     draw(expanded, alphabet, types, 3)
+
+# TODO: REWORK this code, and DOCUMENT... debugging last night (10/10/2018) was a nightmare! and it still doesn't work
